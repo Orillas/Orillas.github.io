@@ -3,32 +3,43 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Orillas - Senior Frontend Engineer & Tech Architect. 专注于高性能 Web 架构与用户体验。">
-    <title>Orillas | Senior Frontend Engineer</title>
+    <meta name="description" content="Orillas - Senior Frontend Engineer & Tech Architect.">
+    <title>Orillas | enjoy the journey</title>
     
     <script src="https://unpkg.com/lucide@latest"></script>
     
     <style>
         :root {
-            /* 现代调色盘 - Zinc 系列 */
-            --bg: #fafafa;
-            --fg: #18181b;
-            --muted: #71717a;
-            --accent: #000000;
-            --border: #e4e4e7;
-            --card-bg: #ffffff;
-            --font-mono: 'JetBrains Mono', 'Fira Code', monospace;
+            /* 白天模式变量 */
+            --bg: #ffffff;
+            --fg: #1a1a1a;
+            --muted: #666666;
+            --nav-link: #1a1a1a;
+            --card-bg: #f9f9f9;
+            --border: #eeeeee;
+            --accent: #0070f3;
+            
+            /* Google 品牌色 */
+            --g-red: #EA4335;
+            --g-yellow: #FBBC05;
+            --g-green: #34A853;
+            --g-blue: #4285F4;
+
+            /* Blob 颜色变量 (清透色系) */
+            --blob-p1: #ffc2e3;
+            --blob-p2: #d4c2ff;
+            --blob-p3: #9bfcfd;
         }
 
-        @media (prefers-color-scheme: dark) {
-            :root {
-                --bg: #09090b;
-                --fg: #f4f4f5;
-                --muted: #a1a1aa;
-                --accent: #ffffff;
-                --border: #27272a;
-                --card-bg: #18181b;
-            }
+        /* 夜间模式变量 */
+        [data-theme="dark"] {
+            --bg: #0a0a0a; 
+            --fg: #eeeeee;
+            --muted: #aaaaaa;
+            --nav-link: #ffffff;
+            --card-bg: #1c1c1c;
+            --border: #333333;
+            --accent: #3291ff;
         }
 
         * { box-sizing: border-box; }
@@ -37,200 +48,335 @@
             font-family: -apple-system, "Inter", "Segoe UI", sans-serif;
             background-color: var(--bg);
             color: var(--fg);
-            line-height: 1.7;
+            line-height: 1.6;
             margin: 0;
-            transition: background 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            transition: background-color 0.5s ease, color 0.3s ease;
             -webkit-font-smoothing: antialiased;
+            overflow-x: hidden;
         }
 
         .container {
-            max-width: 760px;
+            max-width: 900px;
             margin: 0 auto;
-            padding: 100px 24px;
+            padding: 0 24px;
         }
 
-        /* --- Header --- */
-        header { margin-bottom: 80px; position: relative; }
+        /* --- Navbar --- */
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 30px 0;
+        }
+
+        .nav-left { display: flex; align-items: center; gap: 15px; }
+        .logo { 
+            font-size: 1.4rem; 
+            font-weight: 800;
+            text-decoration: none; 
+            color: var(--fg); 
+            letter-spacing: -0.02em;
+        }
         
-        .status-badge {
+        .theme-toggle {
+            background: none;
+            border: none;
+            color: var(--fg);
+            cursor: pointer;
+            padding: 5px;
+            display: flex;
+            align-items: center;
+            transition: opacity 0.2s;
+        }
+        .theme-toggle:hover { opacity: 0.7; }
+
+        .nav-right { display: flex; gap: 20px; }
+        .nav-right a { 
+            text-decoration: none; 
+            color: var(--nav-link); 
+            font-size: 0.95rem; 
+            font-weight: 500;
+            border-bottom: 1px solid transparent;
+        }
+        .nav-right a:hover { border-bottom-color: var(--fg); }
+
+        /* =========================================
+           Header 区域 (Flex 布局)
+        ========================================= */
+        .hero-header {
+            margin-top: 60px;
+            margin-bottom: 80px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 40px;
+            position: relative;
+        }
+
+        .header-content {
+            flex: 1;
+            max-width: 500px;
+            position: relative;
+            z-index: 2;
+        }
+        
+        h1.welcome { 
+            font-size: 2.5rem; 
+            margin-bottom: 20px; 
+            display: flex; 
+            align-items: center; 
+            gap: 12px;
+            font-weight: 800;
+            letter-spacing: -0.03em;
+        }
+        
+        .bio { 
+            font-size: 1.1rem; 
+            color: var(--fg); 
+            margin-bottom: 25px;
+            opacity: 0.9;
+        }
+
+        /* --- Social Links --- */
+        .social-links { display: flex; gap: 18px; margin-top: 25px; }
+        .social-links a { 
+            color: var(--fg);
+            text-decoration: none; 
             display: inline-flex;
             align-items: center;
-            font-size: 12px;
-            background: var(--border);
-            padding: 2px 10px;
-            border-radius: 20px;
-            color: var(--muted);
-            margin-bottom: 16px;
+            justify-content: center;
+            transition: opacity 0.2s ease, transform 0.2s ease;
+        }
+        .social-links a:hover { opacity: 0.7; transform: translateY(-2px); }
+        .social-links i, .social-links svg { width: 25px; height: 25px; stroke-width: 1.5px; }
+
+        /* =========================================
+           🔥 核心修改：多态金属液体 Blob 🔥
+        ========================================= */
+        .header-blob {
+            position: relative;
+            width: 320px;
+            height: 320px;
+            flex-shrink: 0;
+            
+            /* 背景：径向渐变，模拟球体受光 */
+            background: radial-gradient(circle at 30% 30%, var(--blob-p3), var(--blob-p2), var(--blob-p1));
+            
+            /* 初始形状 */
+            border-radius: 60% 40% 30% 70% / 60% 30% 70% 40%;
+            
+            /* 金属质感光影 */
+            box-shadow: 
+                inset 15px 15px 30px rgba(255, 255, 255, 0.95),
+                inset 5px 5px 20px rgba(255, 255, 255, 0.5),
+                inset -15px -25px 40px rgba(0, 0, 0, 0.3),
+                inset 2px 2px 4px rgba(255, 255, 255, 1),
+                15px 25px 40px rgba(0, 0, 0, 0.2);
+            
+            filter: contrast(1.1) saturate(1.2);
+
+            /* 
+               动画时长设为 4s，在这个时间内完成 5 个形状变化，
+               看起来频率很快，但过渡依然平滑。
+            */
+            animation: complex-wave 20s ease-in-out infinite;
+            
+            z-index: 1;
+            cursor: pointer;
+            transition: all 0.5s ease;
         }
 
-        .status-dot {
-            width: 6px;
-            height: 6px;
-            background: #22c55e;
+        /* 🌊 复杂波动动画：5个关键帧，加入旋转和大幅度形变 🌊 */
+        @keyframes complex-wave {
+            0% {
+                border-radius: 60% 40% 30% 70% / 60% 30% 70% 40%;
+                transform: translate(0, 0) rotate(0deg);
+            }
+            20% {
+                /* 稍微压扁 */
+                border-radius: 45% 55% 60% 40% / 55% 45% 40% 60%;
+                transform: translate(5px, -5px) rotate(10deg);
+            }
+            40% {
+                /* 拉长 */
+                border-radius: 40% 60% 65% 38% / 60% 40% 50% 40%;
+                transform: translate(-5px, 8px) rotate(-5deg);
+            }
+            60% {
+                /* 变得比较方/圆润 */
+                border-radius: 30% 70% 70% 30% / 30% 30% 70% 70%;
+                transform: translate(8px, 5px) rotate(5deg);
+            }
+            80% {
+                /* 扭曲 */
+                border-radius: 35% 65% 65% 45% / 25% 35% 65% 75%;
+                transform: translate(-5px, -5px) rotate(-10deg);
+            }
+            100% {
+                border-radius: 60% 40% 30% 70% / 60% 30% 70% 40%;
+                transform: translate(0, 0) rotate(0deg);
+            }
+        }
+
+        /* 交互效果：鼠标悬停时，变得更圆、更亮、定格 */
+        .hero-header:hover .header-blob {
+            animation-play-state: paused;
             border-radius: 50%;
-            margin-right: 8px;
-            box-shadow: 0 0 8px #22c55e;
+            transform: scale(1.05) rotate(0deg); /* 悬停时回正 */
+            box-shadow: 
+                inset 20px 20px 60px rgba(255, 255, 255, 1), 
+                inset -20px -20px 60px rgba(0, 0, 0, 0.2),
+                0 30px 60px rgba(0, 0, 0, 0.25);
         }
 
-        h1 { 
-            font-size: clamp(2rem, 5vw, 3rem); 
-            margin: 0 0 16px 0; 
-            letter-spacing: -0.03em;
-            font-weight: 800;
-        }
-        
-        .intro-text { font-size: 1.15rem; color: var(--muted); max-width: 600px; }
-        .intro-text b { color: var(--fg); font-weight: 500; }
-
-        /* --- Section Styling --- */
-        section { margin-top: 64px; }
-        
-        .section-header {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            margin-bottom: 24px;
-        }
-
-        .section-title {
-            font-size: 0.85rem;
-            text-transform: uppercase;
-            letter-spacing: 0.15em;
-            color: var(--muted);
-            font-weight: 600;
-        }
+        /* --- Content Sections --- */
+        section { margin-top: 100px; }
+        .section-title { font-size: 1.5rem; font-weight: 700; margin-bottom: 30px; }
 
         /* --- Project Cards --- */
-        .grid { display: grid; gap: 16px; }
-
-        .card {
-            background: var(--card-bg);
-            border: 1px solid var(--border);
-            border-radius: 12px;
-            padding: 24px;
+        .project-grid { display: flex; flex-direction: column; gap: 20px; }
+        
+        .project-card {
+            position: relative;
+            width: 100%;
+            border-radius: 16px;
+            padding: 24px 30px;
             text-decoration: none;
             color: inherit;
-            transition: all 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            z-index: 0;
+            transition: transform 0.3s cubic-bezier(0.23, 1, 0.32, 1);
+            outline: 1px solid var(--border);
+            outline-offset: -1px;
+            background-color: transparent;
         }
-
-        .card:hover {
-            border-color: var(--accent);
-            transform: translateY(-4px);
-            box-shadow: 0 12px 24px -10px rgba(0,0,0,0.1);
+        .project-card::before {
+            content: ''; position: absolute; z-index: -2; width: 150%; height: 300%; 
+            top: -100%; left: -25%;
+            background: conic-gradient(
+                var(--g-red), var(--g-yellow), var(--g-green), var(--g-blue),
+                var(--g-red), var(--g-yellow), var(--g-green), var(--g-blue)
+            );
+            opacity: 0; filter: blur(0px); transition: opacity 0.3s, filter 0.3s;
         }
-
-        .card h3 { margin: 0 0 8px 0; font-size: 1.2rem; display: flex; align-items: center; justify-content: space-between; }
-        .card p { margin: 0; color: var(--muted); font-size: 0.95rem; }
+        .project-card::after {
+            content: ''; position: absolute; z-index: -1; inset: 2px;
+            background: var(--card-bg); border-radius: calc(16px - 2px); transition: background 0.3s;
+        }
+        .project-card:hover { transform: scale(1.01); outline-color: transparent; }
+        .project-card:hover::before { opacity: 1; filter: blur(20px); animation: spin-glow 3s linear infinite; }
+        @keyframes spin-glow { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
         
-        .tech-list {
-            margin-top: 16px;
-            display: flex;
-            gap: 12px;
-            font-family: var(--font-mono);
-            font-size: 11px;
-            color: var(--muted);
-            text-transform: uppercase;
-        }
+        .project-card h3 { margin: 0 0 8px 0; font-size: 1.25rem; font-weight: 700; display: flex; justify-content: space-between; align-items: center; position: relative; z-index: 2; }
+        .project-card p { margin: 0; color: var(--muted); font-size: 0.95rem; line-height: 1.6; position: relative; z-index: 2; }
 
-        /* --- Skill Tags --- */
-        .skills-wrap { display: flex; flex-wrap: wrap; gap: 8px; }
-        .skill-tag {
-            padding: 4px 12px;
-            background: var(--border);
-            border-radius: 6px;
-            font-size: 13px;
-            font-weight: 500;
-        }
-
-        /* --- Footer --- */
-        footer {
-            margin-top: 100px;
-            padding-top: 40px;
-            border-top: 1px solid var(--border);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            color: var(--muted);
-            font-size: 0.9rem;
-        }
-
-        .social-links { display: flex; gap: 20px; }
-        .social-links a { color: var(--muted); transition: color 0.2s; }
-        .social-links a:hover { color: var(--fg); }
+        footer { margin: 100px 0 50px; text-align: center; font-size: 0.9rem; color: var(--muted); border-top: 1px solid var(--border); padding-top: 30px; }
 
         /* 移动端适配 */
-        @media (max-width: 640px) {
-            .container { padding: 60px 20px; }
-            footer { flex-direction: column; gap: 20px; text-align: center; }
+        @media (max-width: 800px) {
+            nav { flex-direction: column; gap: 20px; align-items: flex-start; }
+            .nav-right { flex-wrap: wrap; gap: 15px; }
+            .hero-header { flex-direction: column-reverse; gap: 30px; text-align: center; margin-top: 40px; }
+            .header-content { max-width: 100%; display: flex; flex-direction: column; align-items: center; }
+            h1.welcome { justify-content: center; }
+            .header-blob { width: 260px; height: 260px; margin-bottom: -10px; }
         }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <header>
-        <div class="status-badge">
-            <span class="status-dot"></span> 正在探索 WebAssembly 与边缘计算
+    <nav>
+        <div class="nav-left">
+            <a href="/" class="logo">Orillas</a>
+            <button id="theme-btn" class="theme-toggle" title="切换模式">
+                <i data-lucide="sun" id="theme-icon"></i>
+            </button>
         </div>
-        <h1>Orillas</h1>
-        <p class="intro-text">
-            <b>资深前端工程师</b>，擅长从 0 到 1 构建复杂的 Web 系统。
-            在追求<b>极致性能</b>的同时，坚持代码的<b>工程化</b>与<b>优雅设计</b>。
-        </p>
+        <div class="nav-right">
+            <a href="#">Posts</a>
+            <a href="#">Archive</a>
+            <a href="#">Search</a>
+        </div>
+    </nav>
+
+    <header class="hero-header">
+        <div class="header-content">
+            <h1 class="welcome">👋👋 Welcome ようこそ</h1>
+            <p class="bio">
+                I'm a student in <b> AI Engineer & Tech </b> documenting my learning notes and projects. 
+                It's <b> my journey </b>
+            </p>
+            
+            <div class="social-links">
+                <a href="https://twitter.com/" target="_blank" aria-label="Twitter"><i data-lucide="twitter"></i></a>
+                <a href="https://github.com/" target="_blank" aria-label="GitHub"><i data-lucide="github"></i></a>
+                <a href="mailto:your@email.com" aria-label="Email"><i data-lucide="mail"></i></a>
+            </div>
+        </div>
+
+        <div class="header-blob"></div>
     </header>
 
-    <section>
-        <div class="section-header">
-            <span class="section-title">核心技术栈</span>
-        </div>
-        <div class="skills-wrap">
-            <span class="skill-tag">React / Next.js</span>
-            <span class="skill-tag">TypeScript</span>
-            <span class="skill-tag">Node.js</span>
-            <span class="skill-tag">Rust</span>
-            <span class="skill-tag">Web Graphics</span>
-            <span class="skill-tag">CI/CD</span>
-        </div>
-    </section>
 
     <section>
-        <div class="section-header">
-            <span class="section-title">精选项目</span>
-            <a href="https://github.com/Orillas" style="font-size: 13px; color: var(--muted);">查看全部</a>
-        </div>
+        <h2 class="section-title">Notes</h2>
         
-        <div class="grid">
-            <a href="#" class="card">
-                <h3>High-Perf Engine <i data-lucide="arrow-up-right"></i></h3>
-                <p>一个针对金融级数据看板优化的实时渲染引擎，降低了 60% 的内存占用。</p>
-                <div class="tech-list">
-                    <span>#Canvas</span><span>#Optimization</span><span>#Worker</span>
-                </div>
+        <div class="project-grid">
+            <a href="https://github.com/Orillas/TinyTorch_Orillas" class="project-card">
+                <h3>
+                    TinyTorch
+                    <i data-lucide="arrow-up-right" style="width: 20px; color: var(--muted); stroke-width: 2px;"></i>
+                </h3>
+                <p>Based on Harvard educational projects,Learning how to build a ML frameworl from scratch.</p>
             </a>
 
-            <a href="#" class="card">
-                <h3>Open Source UI <i data-lucide="github"></i></h3>
-                <p>为团队打造的原子化组件库，基于 Headless UI 理念实现。</p>
-                <div class="tech-list">
-                    <span>#React</span><span>#Tailwind</span><span>#A11y</span>
-                </div>
+            <a href="#" class="project-card">
+                <h3>
+                    vLLM
+                    <i data-lucide="arrow-up-right" style="width: 20px; color: var(--muted); stroke-width: 2px;"></i>
+                </h3>
+                <p>Learning how to design inference engine.</p>
             </a>
         </div>
     </section>
 
     <footer>
-        <div>© <script>document.write(new Date().getFullYear())</script> Orillas. Build with precision.</div>
-        <div class="social-links">
-            <a href="https://github.com/Orillas"><i data-lucide="github"></i></a>
-            <a href="mailto:contact@orillas.me"><i data-lucide="mail"></i></a>
-            <a href="#"><i data-lucide="twitter"></i></a>
-        </div>
+        © <script>document.write(new Date().getFullYear())</script> Orillas. Build with precision.
     </footer>
 </div>
 
 <script>
-    // 异步加载并初始化图标
     lucide.createIcons();
+
+    const themeBtn = document.getElementById('theme-btn');
+    const htmlElement = document.documentElement;
+    const currentTheme = localStorage.getItem('theme') || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+    
+    if (currentTheme === 'dark') {
+        htmlElement.setAttribute('data-theme', 'dark');
+        updateIcon('moon');
+    }
+
+    themeBtn.addEventListener('click', () => {
+        let theme = htmlElement.getAttribute('data-theme');
+        if (theme === 'dark') {
+            htmlElement.removeAttribute('data-theme');
+            localStorage.setItem('theme', 'light');
+            updateIcon('sun');
+        } else {
+            htmlElement.setAttribute('data-theme', 'dark');
+            localStorage.setItem('theme', 'dark');
+            updateIcon('moon');
+        }
+    });
+
+    function updateIcon(iconName) {
+        themeBtn.innerHTML = `<i data-lucide="${iconName}"></i>`;
+        lucide.createIcons();
+    }
 </script>
 
 </body>
