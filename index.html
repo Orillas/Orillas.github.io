@@ -70,9 +70,9 @@
         }
 
         .nav-left { display: flex; align-items: center; gap: 15px; }
-        .logo { 
-            font-size: 1.4rem; 
-            font-weight: 800;
+        .logo {
+            font-size: 1.8rem;
+            font-weight: 900;
             text-decoration: none; 
             color: var(--fg); 
             letter-spacing: -0.02em;
@@ -158,33 +158,72 @@
             width: 320px;
             height: 320px;
             flex-shrink: 0;
-            
+
+            /* 裁剪内部流光层，使其始终贴合球体形状 */
+            overflow: hidden;
+
             /* 背景：径向渐变，模拟球体受光 */
             background: radial-gradient(circle at 30% 30%, var(--blob-p3), var(--blob-p2), var(--blob-p1));
-            
+
             /* 初始形状 */
             border-radius: 60% 40% 30% 70% / 60% 30% 70% 40%;
-            
-            /* 金属质感光影 */
-            box-shadow: 
+
+            /* 金属质感光影 + 彩色外发光（随色相动画一起变色） */
+            box-shadow:
                 inset 15px 15px 30px rgba(255, 255, 255, 0.95),
                 inset 5px 5px 20px rgba(255, 255, 255, 0.5),
                 inset -15px -25px 40px rgba(0, 0, 0, 0.3),
                 inset 2px 2px 4px rgba(255, 255, 255, 1),
+                0 25px 70px rgba(212, 194, 255, 0.45),
+                0 60px 120px rgba(155, 252, 253, 0.25),
                 15px 25px 40px rgba(0, 0, 0, 0.2);
-            
-            filter: contrast(1.1) saturate(1.2);
 
-            /* 
-               动画时长设为 4s，在这个时间内完成 5 个形状变化，
-               看起来频率很快，但过渡依然平滑。
+            /*
+               两个动画并行：
+               1. complex-wave：20s 内完成 5 次液态形变；
+               2. hue-cycle：16s 色相流转 360°，让球体和光晕缓慢变色。
             */
-            animation: complex-wave 20s ease-in-out infinite;
-            
+            animation: complex-wave 20s ease-in-out infinite, hue-cycle 16s linear infinite;
+
             z-index: 1;
             cursor: pointer;
             transition: all 0.5s ease;
         }
+
+        /* 🌈 炫彩流光层：旋转的油膜彩虹，用混合模式贴在球面上 */
+        .header-blob::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            border-radius: inherit;
+            background: conic-gradient(from 0deg,
+                rgba(255, 94, 168, 0.45),
+                rgba(170, 94, 255, 0.45),
+                rgba(94, 200, 255, 0.45),
+                rgba(94, 255, 194, 0.45),
+                rgba(255, 214, 94, 0.45),
+                rgba(255, 94, 168, 0.45));
+            filter: blur(22px) saturate(1.3);
+            mix-blend-mode: overlay;
+            animation: iridescent-spin 12s linear infinite;
+        }
+
+        /* ✨ 漂移高光：一道游走的金属反光 */
+        .header-blob::after {
+            content: '';
+            position: absolute;
+            top: 18%;
+            left: 22%;
+            width: 38%;
+            height: 38%;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(255, 255, 255, 0.95) 0%, rgba(255, 255, 255, 0.35) 40%, transparent 70%);
+            filter: blur(8px);
+            animation: glare-drift 9s ease-in-out infinite;
+        }
+
+        /* 夜间模式下流光改为滤色，呈现霓虹质感 */
+        [data-theme="dark"] .header-blob::before { mix-blend-mode: screen; opacity: 0.85; }
 
         /* 🌊 复杂波动动画：5个关键帧，加入旋转和大幅度形变 🌊 */
         @keyframes complex-wave {
@@ -218,16 +257,35 @@
             }
         }
 
-        /* 交互效果：鼠标悬停时，变得更圆、更亮、定格 */
+        /* 🌈 流光层旋转 */
+        @keyframes iridescent-spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+
+        /* ✨ 高光游走 */
+        @keyframes glare-drift {
+            0%, 100% { transform: translate(0, 0) scale(1); opacity: 0.85; }
+            50% { transform: translate(90px, 50px) scale(1.35); opacity: 0.5; }
+        }
+
+        /* 🎨 色相循环：球体、光晕、流光整体缓慢流转 */
+        @keyframes hue-cycle {
+            0% { filter: contrast(1.1) saturate(1.25) hue-rotate(0deg); }
+            100% { filter: contrast(1.1) saturate(1.25) hue-rotate(360deg); }
+        }
+
+        /* 交互效果：鼠标悬停时，变得更圆、更亮，所有动画定格 */
         .hero-header:hover .header-blob {
             animation-play-state: paused;
             border-radius: 50%;
             transform: scale(1.05) rotate(0deg); /* 悬停时回正 */
-            box-shadow: 
-                inset 20px 20px 60px rgba(255, 255, 255, 1), 
+            box-shadow:
+                inset 20px 20px 60px rgba(255, 255, 255, 1),
                 inset -20px -20px 60px rgba(0, 0, 0, 0.2),
+                0 35px 90px rgba(212, 194, 255, 0.6),
+                0 70px 140px rgba(155, 252, 253, 0.35),
                 0 30px 60px rgba(0, 0, 0, 0.25);
         }
+        .hero-header:hover .header-blob::before,
+        .hero-header:hover .header-blob::after { animation-play-state: paused; }
 
         /* --- Content Sections --- */
         section { margin-top: 100px; }
@@ -296,9 +354,8 @@
             </button>
         </div>
         <div class="nav-right">
-            <a href="#">Posts</a>
-            <a href="#">Archive</a>
-            <a href="#">Search</a>
+            <a href="#">Blogs</a>
+            <a href="#">Project</a>
         </div>
     </nav>
 
@@ -311,7 +368,7 @@
             </p>
             
             <div class="social-links">
-                <a href="https://twitter.com/" target="_blank" aria-label="X">
+                <a href="https://x.com/JilinJeferry" target="_blank" aria-label="X">
                     <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4l11.733 16h4.267l-11.733 -16h-4.267z"/><path d="M4 20l6.768 -6.768m2.46 -2.46l6.772 -6.772"/></svg>
                 </a>
                 <a href="https://github.com/Orillas/" target="_blank" aria-label="GitHub">
@@ -381,6 +438,8 @@
         lucide.createIcons();
     }
 </script>
+
+
 
 </body>
 </html>
