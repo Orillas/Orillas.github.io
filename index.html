@@ -153,17 +153,40 @@
         /* =========================================
            🔥 核心修改：多态金属液体 Blob 🔥
         ========================================= */
+        /* 注册可动画的角度变量：流光用「旋转背景渐变角度」实现，
+           彻底移除旋转子层——WebKit(Safari) 对圆角容器内的滤镜/混合子层裁剪不可靠，
+           而元素自身的背景永远被自身 border-radius 裁剪，任何浏览器都不会漏出直边 */
+        @property --iridescent-angle {
+            syntax: '<angle>';
+            inherits: false;
+            initial-value: 0deg;
+        }
+
         .header-blob {
             position: relative;
             width: 320px;
             height: 320px;
             flex-shrink: 0;
 
-            /* 裁剪内部流光层，使其始终贴合球体形状 */
+            /* 裁剪内部子层，使其始终贴合球体形状 */
             overflow: hidden;
 
-            /* 背景：径向渐变，模拟球体受光 */
-            background: radial-gradient(circle at 30% 30%, var(--blob-p3), var(--blob-p2), var(--blob-p1));
+            /* 背景三层（自上而下）：
+               1. 中心遮盖层：基底渐变的不透明中心 + 透明外缘，盖住 conic 的收拢顶点；
+               2. 流光 conic：顶点也放在 30% 30%，藏在遮盖层下，不再显示「顶点」；
+               3. 基底受光渐变。
+               第一条声明是不支持 @property 浏览器的兜底（仅静态渐变球，同样无直边） */
+            background-image: radial-gradient(circle at 30% 30%, var(--blob-p3), var(--blob-p2), var(--blob-p1));
+            background-image: radial-gradient(circle at 30% 30%,
+                    var(--blob-p3) 0%, var(--blob-p2) 38%, transparent 62%),
+                conic-gradient(from var(--iridescent-angle) at 30% 30%,
+                    rgba(255, 94, 168, 0.30),
+                    rgba(170, 94, 255, 0.30),
+                    rgba(94, 200, 255, 0.30),
+                    rgba(94, 255, 194, 0.30),
+                    rgba(255, 214, 94, 0.30),
+                    rgba(255, 94, 168, 0.30)),
+                radial-gradient(circle at 30% 30%, var(--blob-p3), var(--blob-p2), var(--blob-p1));
 
             /* 初始形状 */
             border-radius: 60% 40% 30% 70% / 60% 30% 70% 40%;
@@ -179,36 +202,18 @@
                 15px 25px 40px rgba(0, 0, 0, 0.2);
 
             /*
-               两个动画并行：
+               三个动画并行：
                1. complex-wave：20s 内完成 5 次液态形变；
-               2. hue-cycle：16s 色相流转 360°，让球体和光晕缓慢变色。
+               2. hue-cycle：16s 色相流转 360°，让球体和光晕缓慢变色；
+               3. iridescent-spin：12s 流光旋转（动画化背景渐变角度）。
             */
-            animation: complex-wave 20s ease-in-out infinite, hue-cycle 16s linear infinite;
+            animation: complex-wave 20s ease-in-out infinite, hue-cycle 16s linear infinite, iridescent-spin 12s linear infinite;
 
             z-index: 1;
             /* 把混合模式限制在球体自身的渲染上下文里，防止流光层渗透到轮廓外 */
             isolation: isolate;
             cursor: pointer;
             transition: all 0.5s ease;
-        }
-
-        /* 🌈 炫彩流光层：旋转的油膜彩虹，用混合模式贴在球面上
-           圆形 + 放大 15%：旋转时永不产生直边（方形层旋转会在轮廓外漏出横线） */
-        .header-blob::before {
-            content: '';
-            position: absolute;
-            inset: -15%;
-            border-radius: 50%;
-            background: conic-gradient(from 0deg,
-                rgba(255, 94, 168, 0.45),
-                rgba(170, 94, 255, 0.45),
-                rgba(94, 200, 255, 0.45),
-                rgba(94, 255, 194, 0.45),
-                rgba(255, 214, 94, 0.45),
-                rgba(255, 94, 168, 0.45));
-            filter: blur(22px) saturate(1.3);
-            mix-blend-mode: overlay;
-            animation: iridescent-spin 12s linear infinite;
         }
 
         /* ✨ 漂移高光：一道游走的金属反光 */
@@ -224,9 +229,6 @@
             filter: blur(8px);
             animation: glare-drift 9s ease-in-out infinite;
         }
-
-        /* 夜间模式下流光改为滤色，呈现霓虹质感 */
-        [data-theme="dark"] .header-blob::before { mix-blend-mode: screen; opacity: 0.85; }
 
         /* 🌊 复杂波动动画：5个关键帧，加入旋转和大幅度形变 🌊 */
         @keyframes complex-wave {
@@ -260,8 +262,11 @@
             }
         }
 
-        /* 🌈 流光层旋转 */
-        @keyframes iridescent-spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+        /* 🌈 流光层旋转：动画化注册的角度变量，旋转的是背景渐变本身而非元素 */
+        @keyframes iridescent-spin {
+            from { --iridescent-angle: 0deg; }
+            to { --iridescent-angle: 360deg; }
+        }
 
         /* ✨ 高光游走 */
         @keyframes glare-drift {
@@ -287,7 +292,6 @@
                 0 70px 140px rgba(155, 252, 253, 0.35),
                 0 30px 60px rgba(0, 0, 0, 0.25);
         }
-        .hero-header:hover .header-blob::before,
         .hero-header:hover .header-blob::after { animation-play-state: paused; }
 
         /* --- Content Sections --- */
