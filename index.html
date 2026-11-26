@@ -186,16 +186,19 @@
             animation: complex-wave 20s ease-in-out infinite, hue-cycle 16s linear infinite;
 
             z-index: 1;
+            /* 把混合模式限制在球体自身的渲染上下文里，防止流光层渗透到轮廓外 */
+            isolation: isolate;
             cursor: pointer;
             transition: all 0.5s ease;
         }
 
-        /* 🌈 炫彩流光层：旋转的油膜彩虹，用混合模式贴在球面上 */
+        /* 🌈 炫彩流光层：旋转的油膜彩虹，用混合模式贴在球面上
+           圆形 + 放大 15%：旋转时永不产生直边（方形层旋转会在轮廓外漏出横线） */
         .header-blob::before {
             content: '';
             position: absolute;
-            inset: 0;
-            border-radius: inherit;
+            inset: -15%;
+            border-radius: 50%;
             background: conic-gradient(from 0deg,
                 rgba(255, 94, 168, 0.45),
                 rgba(170, 94, 255, 0.45),
